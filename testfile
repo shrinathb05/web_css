@@ -1,9 +1,0 @@
-Hi this is test file for cehcking the pull command.
-
----------------------
-
-Git reset --soft:-
-    The will only revert the commit history and the changes of the file will remain the same but delete the commit.
-
-Git reset --hard :-
-    This will revert the git commit history as well as the file changes which ever we have done means it will delete the git commit as well as changes we have done.

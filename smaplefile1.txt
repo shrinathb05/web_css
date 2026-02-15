@@ -1,8 +1,0 @@
-this first sample file for testing
-and this is second git reset commit
-
----------------------------------------
-
-adding some other lines to check the revert command how will react
-
-this is testing file
