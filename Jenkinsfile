@@ -6,86 +6,49 @@ pipeline {
     }
 
     environment {
-        // Nginx Server Details
-        NGINX_IP = "10.181.63.24"
-        SSH_USER = "jenkins"
-        
-        // Remote Paths on Nginx Server
-        DEPLOY_DIR = "/var/www/html"
-        BACKUP_DIR = "/home/jenkins/backup"
-        
-        // GitHub Repository Details
-        REPO_USER = "shrinathb05"
-        REPO_NAME = "web_css"
+        NGINX_IP    = "10.181.63.24"
+        SSH_USER    = "jenkins"
+        DEPLOY_DIR  = "/var/www/html"
+        BACKUP_DIR  = "/home/jenkins/backup"
+        REPO_USER   = "shrinathb05"
+        REPO_NAME   = "web_css"
     }
 
     stages {
-        stage('1. Prepare Content in Jenkins Workspace') {
+        stage('1. Fetch Source') {
             steps {
-                // Jenkins workspace is our WORK_DIR
-                deleteDir() 
-                echo "Downloading source for Tag: ${params.TAG_VERSION}..."
-                
+                deleteDir()
+                echo "📥 Downloading Tag: ${params.TAG_VERSION}"
                 withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'TOKEN')]) {
-                    sh """
-                        curl -L -H "Authorization: token ${TOKEN}" \
-                        https://github.com/${REPO_USER}/${REPO_NAME}/archive/refs/tags/${params.TAG_VERSION}.zip -o source.zip
-                    """
+                    sh 'curl -f -L -H "Authorization: token $TOKEN" https://github.com/$REPO_USER/$REPO_NAME/archive/refs/tags/${TAG_VERSION}.zip -o source.zip'
                 }
-                
-                echo "Extracting content locally in Jenkins Workspace..."
-                sh "unzip -q source.zip"
-                
-                // GitHub zips extract into a folder (e.g., web_css-0.0.1)
-                // Moving files to the workspace root
-                sh "mv ${REPO_NAME}-*/* ./"
-                
-                // Remove the zip and the empty folder to keep workspace clean
-                sh "rm -rf source.zip ${REPO_NAME}-*" 
             }
         }
 
-        stage('2. Deploy from Workspace to Nginx') {
+        stage('2. Extract & Clean') {
+            steps {
+                echo "📦 Extracting content in Jenkins Workspace..."
+                sh """
+                    unzip -q source.zip
+                    mv ${REPO_NAME}-*/* ./
+                    rm -rf source.zip ${REPO_NAME}-*
+                """
+            }
+        }
+
+        stage('3. Remote Backup') {
             steps {
                 sshagent(['nginx-server-key']) {
                     script {
                         def timestamp = sh(script: "date +%Y%m%d%H%M%S", returnStdout: true).trim()
-                        
-                        // Step A, B, and C: Remote Prep
+                        echo "🛡️ Creating Remote Backup on Nginx..."
                         sh """
-                            ssh -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
+                            ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
                                 set -e
-                                # Create Backup
-                                sudo mkdir -p ${BACKUP_DIR}
+                                sudo /usr/bin/mkdir -p ${BACKUP_DIR}
                                 if [ -d "${DEPLOY_DIR}" ] && [ "\$(ls -A ${DEPLOY_DIR})" ]; then
-                                    sudo tar -czf ${BACKUP_DIR}/web_${timestamp}.tar.gz -C ${DEPLOY_DIR} .
-                                    echo "Backup created: web_${timestamp}.tar.gz"
-                                fi
-
-                                # Stop Nginx
-                                if systemctl is-active --quiet nginx; then
-                                    sudo systemctl stop nginx
-                                    echo "Log: Nginx stopped."
-                                fi
-
-                                # Clear deployment directory
-                                sudo rm -rf ${DEPLOY_DIR}/*
-EOF
-                        """
-
-                        // Step D: Deploy from Jenkins Workspace to Nginx via SCP
-                        echo "Transferring files from Jenkins Workspace to ${NGINX_IP}..."
-                        sh "scp -r ./* ${SSH_USER}@${NGINX_IP}:${DEPLOY_DIR}/"
-
-                        // Step E: Restart Nginx
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
-                                set -e
-                                sudo systemctl start nginx
-                                if systemctl is-active --quiet nginx; then
-                                    echo "Log: Nginx started successfully!"
-                                else
-                                    echo "Log: Nginx failed to start!" && exit 1
+                                    sudo /usr/bin/tar -czf ${BACKUP_DIR}/web_${timestamp}.tar.gz -C ${DEPLOY_DIR} .
+                                    echo "Backup Saved: web_${timestamp}.tar.gz"
                                 fi
 EOF
                         """
@@ -93,18 +56,45 @@ EOF
                 }
             }
         }
+
+        stage('4. Deploy Files') {
+            steps {
+                sshagent(['nginx-server-key']) {
+                    echo "🚀 Transferring files to Nginx Server..."
+                    sh """
+                        ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} "sudo /usr/bin/systemctl stop nginx && sudo /usr/bin/rm -rf ${DEPLOY_DIR}/*"
+                        scp -r ./* ${SSH_USER}@${NGINX_IP}:${DEPLOY_DIR}/
+                    """
+                }
+            }
+        }
+
+        stage('5. Verify & Start') {
+            steps {
+                sshagent(['nginx-server-key']) {
+                    echo "✅ Starting Nginx and Verifying..."
+                    sh """
+                        ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
+                            set -e
+                            sudo /usr/bin/systemctl start nginx
+                            sudo /usr/bin/systemctl is-active --quiet nginx && echo "Nginx is Live!"
+EOF
+                    """
+                }
+            }
+        }
     }
 
     post {
         always {
-            echo "Pipeline execution finished."
+            deleteDir()
+            echo "Pipeline Complete."
         }
         success {
-            echo "-------------- Deployment Successful --------------"
-            echo "Version: ${params.TAG_VERSION}"
+            echo "✅ SUCCESS: Version ${params.TAG_VERSION} is now live."
         }
         failure {
-            echo "❌ Deployment Failed. Check console output."
+            echo "❌ FAILURE: Check the failed stage in the Stage View."
         }
     }
 }
