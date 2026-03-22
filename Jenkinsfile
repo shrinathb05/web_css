@@ -62,7 +62,7 @@ pipeline {
                         try {
                             // Removed the extra --coverage since it is in your package.json
                             // Added --passWithNoTests to prevent failure if no tests exist yet
-                            sh "CI=true npm run test:unit -- --reporter=default --reporter=junit --outputFile=junit.xml --passWithNoTests"
+                            sh "CI=true npm run test:unit -- --reporter=default --reporter=junit --outputFile=reports/vitest/results.xml --passWithNoTests"
                         } catch (Exception e) {
                             currentBuild.result = 'FAILURE'
                             echo "Unit tests failed, but continuing to post-actions for reporting."
@@ -73,7 +73,7 @@ pipeline {
                         try {
                             // 1. CI=true ensures Playwright runs in headless mode
                             // 2. --reporter=junit,list gives us both console output and an XML file
-                            sh "CI=true npx playwright test --reporter=junit,list"
+                            sh "PLAYWRIGHT_JUNIT_OUTPUT_NAME=reports/playwright/results.xml CI=true npx playwright test --reporter=junit,list"
                         } catch (Exception e) {
                             currentBuild.result = 'FAILURE'
                             echo "Integration tests failed. Check the Playwright report for details."
@@ -112,6 +112,7 @@ pipeline {
                         echo "Formatting test execution reports for SonarScanner..."
                         // This runs your custom script to bridge Vitest -> SonarQube
                         sh "npm run sonar:prepare"
+                        sh "ls -R reports/sonar/"
 
                         //SonarQube Scan
                         withSonarQubeEnv("${env.SONAR_SERVER_NAME}") {
@@ -121,7 +122,7 @@ pipeline {
                             -Dsonar.projectKey=collector-hub-static-site \
                             -Dsonar.sources=. \
                             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                            -Dsonar.testExecutionReportPaths=reports/test-reporter.xml \
+                            -Dsonar.testExecutionReportPaths=reports/sonar/test-execution.xml \
                             -Dsonar.exclusions=node_modules/**,playwright-report/**,dist/**
                         """
                     }
