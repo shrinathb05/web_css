@@ -21,39 +21,34 @@ pipeline {
     stages {
         stage('Clean & Checkout') {
             steps {
-                dir("${WORK_DIR}") {
-                    sh """
-                        mkdir -p "${WORK_DIR}"
-                        rm -rf "${WORK_DIR}"/*
-                    """
-                    // Downloading the artifacts
+                script {
+                    // Ensure the parent directory exists
+                    sh "mkdir -p ${env.WORK_DIR}"
+                }
+                dir("${env.WORK_DIR}") {
+                    deleteDir() // Clean the specific WORK_DIR
                     checkout scmGit(
-                        branches: [[name: "${env.GIT_BRANCH}"]], 
-                        extensions: [], 
+                        branches: [[name: "${env.GIT_BRANCH}"]],
                         userRemoteConfigs: [[url: "${env.GIT_REPO}"]]
                     )
-                    // 3. Verify the files exist
-                    sh "ls -lrt"
                 }
             }
         }
 
         stage("Install Dependencies") {
             steps {
-                dir("${WORK_DIR}") {
-                    echo " Installing project dependencies..."
-                    // Using npm ci for a clean, deterministic install
-                    sh "npm ci"
+                dir("${env.WORK_DIR}") {
+                    echo "Installing dependencies in ${env.WORK_DIR}..."
+                    sh "npm ci --quiet"
                 }
             }
         }
 
         stage("Install Playwright Browser") {
             steps {
-                dir("${WORK_DIR}") {
-                    echo "Install Playwright Chromium Browser....."
-                    // Install only the chromium binary to save time/space
-                    sh 'npx playwright install chromium'
+                dir("${env.WORK_DIR}") {
+                    echo "Configuring Playwright environment..."
+                    sh "npx playwright install chromium"
                 }
             }
         }
@@ -66,6 +61,53 @@ pipeline {
                 }
             }
         }
+        
+        stage('Unit Tests') {
+            steps {
+                dir("${WORK_DIR}") {
+                    echo "Running the unit tests......"
+                    script {
+                        try {
+                            // Run tests, generate JUnit XML and LCOV coverage
+                            sh "CI=true npm run test:unit -- --coverage --reporters=default --reporters=jest-junit"
+                        } catch (Exception e) {
+                            // This ensures the pipeline fails if tests fail, 
+                            // but still allows the 'post' block to archive the results.
+                            currentBuild.result = 'FAILURE'
+                            error "Unit tests failed. Check the Jenkins 'Test Result' tab for details."
+                        }
+                    }
+                }
+            }
+        }
     }
 
+    post {
+        always {
+            dir("${env.WORK_DIR}") {
+                echo "Archiving Test and Coverage Reports..."
+                
+                // 1. Capture JUnit XML results to show the "Test Result" trend graph
+                // Adjust the path to where your runner saves the XML (e.g., junit.xml)
+                junit allowEmptyResults: true, testResults: '**/junit.xml'
+
+                // 2. Archive the HTML Coverage report so you can view it in Jenkins
+                publishHTML([
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'coverage/lcov-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Unit Test Coverage'
+                ])
+            }
+        }
+        cleanup {
+            echo "Cleaning up workspace..."
+            // Optional: deleteDir() 
+            // In production, some prefer to keep the WORK_DIR for debugging, 
+            // but deleteDir() keeps the agent storage healthy.
+        }
+    }
+    
 }
