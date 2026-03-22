@@ -22,8 +22,10 @@ pipeline {
         stage('Clean & Checkout') {
             steps {
                 dir("${WORK_DIR}") {
-                    sh "mkdir -p "${WORK_DIR}" && rm -rf "${WORK_DIR}"/*"
-                    
+                    sh """
+                        mkdir -p "${WORK_DIR}"
+                        rm -rf "${WORK_DIR}"/*
+                    """
                     // Downloading the artifacts
                     checkout scmGit(
                         branches: [[name: "${env.GIT_BRANCH}"]], 
