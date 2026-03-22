@@ -103,19 +103,17 @@ pipeline {
 
                         // 3. NEW: OWASP Dependency-Check
                         // This uses the Jenkins Plugin 'dependency-check-jenkins'
-
                         withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
                             script {
-                                dependencyCheck additionalArguments: """
-                                    --scan './' 
-                                    --format 'ALL'
-                                    --out 'reports/owasp'" 
-                                    --nvdApiKey ${NVD_KEY}
-                                    --nodeAuditSkip
-                                """,
-                                odcInstallation: "${OWASP_CHECK_NAME}" // Name from Jenkins Global Tool Config
+                                // Use a single string without commas between arguments
+                                // Added --project name which is often required by the CLI
+                                def odcArgs = "--scan ./ --format ALL --out reports/owasp --nvdApiKey ${NVD_KEY} --nodeAuditSkip --project collector-hub"
+                                
+                                dependencyCheck additionalArguments: odcArgs, 
+                                                odcInstallation: "${OWASP_CHECK_NAME}"
                             }
                         }
+                        
                     }
                 }
             }
