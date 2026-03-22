@@ -70,10 +70,10 @@ pipeline {
                         try {
                             // Removed the extra --coverage since it is in your package.json
                             // Added --passWithNoTests to prevent failure if no tests exist yet
-                            sh "CI=true npm run test:unit -- --reporters=default --reporters=jest-junit --passWithNoTests"
+                            sh "CI=true npm run test:unit -- --reporter=default --reporter=jest-junit --passWithNoTests"
                         } catch (Exception e) {
                             currentBuild.result = 'FAILURE'
-                            // We don't 'error' here yet so we can try to collect reports in Post
+                            echo "Unit tests failed, but continuing to post-actions for reporting."
                         }
                     }
                 }
