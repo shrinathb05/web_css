@@ -86,21 +86,22 @@ pipeline {
     post {
         always {
             dir("${env.WORK_DIR}") {
-                echo "Archiving Test and Coverage Reports..."
-                
-                // 1. Capture JUnit XML results to show the "Test Result" trend graph
-                // Adjust the path to where your runner saves the XML (e.g., junit.xml)
-                junit allowEmptyResults: true, testResults: '**/junit.xml'
+                // Archive the JUnit XML we just generated
+                junit allowEmptyResults: true, testResults: 'junit.xml'
 
-                // 2. Archive the HTML Coverage report so you can view it in Jenkins
-                publishHTML([
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'coverage/lcov-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Unit Test Coverage'
-                ])
+                script {
+                    // Only publish if Vitest successfully created the coverage folder
+                    if (fileExists("coverage/lcov-report/index.html")) {
+                        publishHTML([
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'coverage/lcov-report',
+                            reportFiles: 'index.html',
+                            reportName: 'Unit Test Coverage'
+                        ])
+                    }
+                }
             }
         }
         cleanup {
