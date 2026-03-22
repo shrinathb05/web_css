@@ -57,6 +57,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Lint') {
+            steps {
+                dir("${WORK_DIR}") {
+                    echo "Running Linter (ESLint/Prettier)......."
+                    sh 'npm run lint'
+                }
+            }
+        }
     }
 
 }
