@@ -107,9 +107,9 @@ pipeline {
                         withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
                             script {
                                 dependencyCheck additionalArguments: """
-                                    --scan './', 
-                                    --format 'ALL',
-                                    --out 'reports/owasp'", 
+                                    --scan './' 
+                                    --format 'ALL'
+                                    --out 'reports/owasp'" 
                                     --nvdApiKey ${NVD_KEY}
                                     --nodeAuditSkip
                                 """,
