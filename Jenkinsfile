@@ -44,31 +44,24 @@ pipeline {
             }
         }
 
-        stage("Install Playwright Browser") {
+        stage("Install Playwright Browser & Lint") {
             steps {
                 dir("${env.WORK_DIR}") {
                     echo "Configuring Playwright environment..."
                     sh "npx playwright install chromium"
-                }
-            }
-        }
 
-        stage('Lint') {
-            steps {
-                dir("${WORK_DIR}") {
                     echo "Running Linter (ESLint/Prettier)......."
                     sh 'npm run lint'
                 }
             }
         }
         
-        stage('Unit Tests') {
+        stage('Unit & Integration Tests') {
             steps {
                 dir("${WORK_DIR}") {
-                    echo "Running the unit tests......"
                     script {
-                        echo "Installing additional packages"
-                        sh "npm install --save-dev jest-junit"
+                        // Unit Tests
+                        echo "Running the unit tests......"
                         try {
                             // Removed the extra --coverage since it is in your package.json
                             // Added --passWithNoTests to prevent failure if no tests exist yet
@@ -77,16 +70,9 @@ pipeline {
                             currentBuild.result = 'FAILURE'
                             echo "Unit tests failed, but continuing to post-actions for reporting."
                         }
-                    }
-                }
-            }
-        }
-
-        stage('Integration Tests') {
-            steps {
-                dir("${WORK_DIR}") {
-                    echo "Running Playwright Integration Tests..."
-                    script {
+                        
+                        // Integration Tests
+                        echo "Running Playwright Integration Tests..."
                         try {
                             // 1. CI=true ensures Playwright runs in headless mode
                             // 2. --reporter=junit,list gives us both console output and an XML file
@@ -99,15 +85,39 @@ pipeline {
                 }
             }
         }
+
+        stage('Security Checks') {
+            steps {
+                dir("${WORK_DIR}") {
+                    echo "Running Security Audits..."
+                    script {
+                        try {
+                            // 1. Run NPM Audit (High/Critical only)
+                            sh "npm run audit:npm"
+
+                            // 2. Run Retire.js (Scans for insecure JS libraries)
+                            sh "npm run audit:retire"
+                        } catch (Exception e) {
+                            // In production, we usually fail the build if security issues are found
+                            currentBuild.result = 'FAILURE'
+                            error "Security vulnerabilities detected! Please check the audit reports."
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
             dir("${env.WORK_DIR}") {
-                
+
                 // Combine Unit and Integration XML results
                 // This looks for any .xml file in the workspace
                 junit allowEmptyResults: true, testResults: '**/junit.xml, **/results.xml'
+
+                // Archive the security reports folder
+                archiveArtifacts artifacts: 'reports/*.json', allowEmptyArchive: true
 
                 script {
                     // Archive Playwright HTML Report if it exists
