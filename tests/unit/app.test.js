@@ -1,5 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Mock localStorage for the Vitest environment 
+if (typeof window !== 'undefined' && !window.localStorage) {
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      clear: vi.fn(),
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    },
+    writable: true
+  });
+}
+
 async function loadAppScript() {
   window.localStorage.clear();
   delete window.__collectorHubApp;
