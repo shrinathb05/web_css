@@ -1,175 +1,39 @@
 pipeline {
-    agent any
+    
+    agent {label 'agent1'}
 
-    options {
-        timestamps()
-    }
-
-    parameters {
-        string(name: 'TAG_VERSION', defaultValue: '0.0.1', description: 'Git tag to deploy')
-        booleanParam(name: 'DEPLOY_AFTER_QA', defaultValue: true, description: 'Deploy only after all QA and security checks pass')
-    }
+    // parameters {
+    //     string(name: 'TAG_NAME', defaultValue: 'v0.1', description: 'Provide tag to deploy the project')
+    // }
 
     environment {
-        NGINX_IP           = "10.181.63.24"
-        SSH_USER           = "jenkins"
-        DEPLOY_DIR         = "/var/www/html"
-        BACKUP_DIR         = "/home/jenkins/backup"
-        REPO_USER          = "shrinathb05"
-        REPO_NAME          = "web_css"
-        SONARQUBE_SERVER   = "sonarqube"
-        SONAR_SCANNER_TOOL = "sonar-scanner"
-        CI                 = "true"
+        
+        GIT_REPO = "https://github.com/shrinathb05/web_css.git"
+        GIT_BRANCH = "dev"
+
+        SONAR_SERVER_NAME = "sonar-server"
+        OWASP_TOOL_NAME = "owasp-dpcheck"
+
+        WORK_DIR = "/home/ubuntu/var/work/webapp"
+        
     }
 
     stages {
-        stage('1. Fetch Source') {
+        stage('Clean & Checkout') {
             steps {
-                deleteDir()
-                echo "Downloading tag ${params.TAG_VERSION}"
-                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'TOKEN')]) {
-                    sh 'curl -f -L -H "Authorization: token $TOKEN" https://github.com/$REPO_USER/$REPO_NAME/archive/refs/tags/${TAG_VERSION}.zip -o source.zip'
-                }
-            }
-        }
-
-        stage('2. Extract Source') {
-            steps {
-                sh '''
-                    unzip -q source.zip
-                    mv ${REPO_NAME}-*/* ./
-                    rm -rf source.zip ${REPO_NAME}-*
-                '''
-            }
-        }
-
-        stage('3. Install Dependencies') {
-            steps {
-                sh 'npm ci'
-            }
-        }
-
-        stage('4. Install Playwright Browser') {
-            steps {
-                sh 'npx playwright install chromium'
-            }
-        }
-
-        stage('5. Lint') {
-            steps {
-                sh 'npm run lint'
-            }
-        }
-
-        stage('6. Unit Tests') {
-            steps {
-                sh 'npm run test:unit'
-            }
-        }
-
-        stage('7. Integration Tests') {
-            steps {
-                sh 'npm run test:integration'
-            }
-        }
-
-        stage('8. Security Checks') {
-            steps {
-                sh 'npm run audit'
-            }
-        }
-
-        stage('9. Prepare Sonar Reports') {
-            steps {
-                sh 'npm run sonar:prepare'
-            }
-        }
-
-        stage('10. SonarQube Scan') {
-            steps {
-                script {
-                    def scannerHome = tool env.SONAR_SCANNER_TOOL
-                    withSonarQubeEnv(env.SONARQUBE_SERVER) {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-
-        stage('11. Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-        stage('12. Remote Backup') {
-            when {
-                expression { return params.DEPLOY_AFTER_QA }
-            }
-            steps {
-                sshagent(['nginx-server-key']) {
-                    script {
-                        def timestamp = sh(script: "date +%Y%m%d%H%M%S", returnStdout: true).trim()
-                        sh """
-                            ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
-                                set -e
-                                sudo /usr/bin/mkdir -p ${BACKUP_DIR}
-                                if [ -d "${DEPLOY_DIR}" ] && [ "\$(ls -A ${DEPLOY_DIR})" ]; then
-                                    sudo /usr/bin/tar -czf ${BACKUP_DIR}/web_${timestamp}.tar.gz -C ${DEPLOY_DIR} .
-                                    echo "Backup saved: web_${timestamp}.tar.gz"
-                                fi
-EOF
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('13. Deploy Files') {
-            when {
-                expression { return params.DEPLOY_AFTER_QA }
-            }
-            steps {
-                sshagent(['nginx-server-key']) {
-                    sh """
-                        ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} "sudo /usr/bin/systemctl stop nginx && sudo /usr/bin/rm -rf ${DEPLOY_DIR}/*"
-                        scp -r ./* ${SSH_USER}@${NGINX_IP}:${DEPLOY_DIR}/
-                    """
-                }
-            }
-        }
-
-        stage('14. Verify Deployment') {
-            when {
-                expression { return params.DEPLOY_AFTER_QA }
-            }
-            steps {
-                sshagent(['nginx-server-key']) {
-                    sh """
-                        ssh -T -o StrictHostKeyChecking=no ${SSH_USER}@${NGINX_IP} << 'EOF'
-                            set -e
-                            sudo /usr/bin/systemctl start nginx
-                            sudo /usr/bin/systemctl is-active --quiet nginx && echo "Nginx is live"
-EOF
-                    """
+                dir("${WORK_DIR}") {
+                    sh "mkdir -p "${WORK_DIR}" && rm -rf "${WORK_DIR}"/*"
+                    # Downloading the artifacts
+                    checkout scmGit(
+                        branches: [[name: "${env.GIT_BRANCH}"]], 
+                        extensions: [], 
+                        userRemoteConfigs: [[url: "${env.GIT_REPO}"]]
+                    )
+                    // 3. Verify the files exist
+                    sh "ls -lrt"
                 }
             }
         }
     }
 
-    post {
-        always {
-            junit allowEmptyResults: true, testResults: 'reports/**/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**/*'
-            deleteDir()
-        }
-        success {
-            echo params.DEPLOY_AFTER_QA ? "SUCCESS: version ${params.TAG_VERSION} passed QA and was deployed." : "SUCCESS: version ${params.TAG_VERSION} passed QA checks."
-        }
-        failure {
-            echo "FAILURE: check the failed stage and archived reports."
-        }
-    }
 }
