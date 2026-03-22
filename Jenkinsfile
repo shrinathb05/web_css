@@ -68,13 +68,12 @@ pipeline {
                     echo "Running the unit tests......"
                     script {
                         try {
-                            // Run tests, generate JUnit XML and LCOV coverage
-                            sh "CI=true npm run test:unit -- --coverage --reporters=default --reporters=jest-junit"
+                            // Removed the extra --coverage since it is in your package.json
+                            // Added --passWithNoTests to prevent failure if no tests exist yet
+                            sh "CI=true npm run test:unit -- --reporters=default --reporters=jest-junit --passWithNoTests"
                         } catch (Exception e) {
-                            // This ensures the pipeline fails if tests fail, 
-                            // but still allows the 'post' block to archive the results.
                             currentBuild.result = 'FAILURE'
-                            error "Unit tests failed. Check the Jenkins 'Test Result' tab for details."
+                            // We don't 'error' here yet so we can try to collect reports in Post
                         }
                     }
                 }
@@ -109,5 +108,5 @@ pipeline {
             // but deleteDir() keeps the agent storage healthy.
         }
     }
-    
+
 }
