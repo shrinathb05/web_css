@@ -131,17 +131,15 @@ pipeline {
         }
 
         stage('Quality Gate') {
+            options {
+                // If SonarQube doesn't respond in 5 minutes, fail the stage
+                timeout(time: 5, unit: 'MINUTES') 
+            }
             steps {
-                dir("${WORK_DIR}") {
-                    steps {
-                        echo "Waiting for the quality gate......"
-                        timeout(time: 5, unit: 'MINUTES') {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted: SonarQube Quality Gate failed (${qg.status})"
-                        }
-                    }
-                    }
+                dir("${env.WORK_DIR}") {
+                    echo "Waiting for SonarQube Quality Gate result..."
+                    // This requires a Webhook configured in SonarQube pointing to Jenkins
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
