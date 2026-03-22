@@ -1,0 +1,32 @@
+{
+  "name": "collector-hub-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static marketplace-style website with client-side interactions.",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "serve": "python3 -m http.server 4173",
+    "check": "python3 -m json.tool package.json > /dev/null",
+    "lint": "npm run lint:html && npm run lint:js",
+    "lint:html": "htmlhint \"*.html\"",
+    "lint:js": "eslint assets/js/app.js assets/js/custom.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "vitest run --coverage",
+    "test:integration": "playwright test",
+    "audit": "npm run audit:npm && npm run audit:retire",
+    "audit:npm": "npm audit --omit=dev --audit-level=high",
+    "audit:retire": "mkdir -p reports && retire --path . --ignore node_modules,reports,playwright-report,test-results --severity high --outputformat json --outputpath reports/retirejs-report.json",
+    "sonar:prepare": "node scripts/sonar-test-execution.js",
+    "ci": "npm run lint && npm run test:unit && npm run test:integration && npm run sonar:prepare && npm run audit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
+    "htmlhint": "^1.7.1",
+    "jsdom": "^26.1.0",
+    "retire": "^5.3.0",
+    "vitest": "^3.2.4"
+  }
+}

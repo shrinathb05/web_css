@@ -2035,6 +2035,46 @@ Create Page Style
   text-align: center;
 }
 
+.app-message {
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.app-message.success {
+  background-color: rgba(44, 184, 120, 0.14);
+  border: 1px solid rgba(44, 184, 120, 0.45);
+  color: #d7ffec;
+}
+
+.app-message.error {
+  background-color: rgba(255, 87, 87, 0.14);
+  border: 1px solid rgba(255, 87, 87, 0.45);
+  color: #ffe3e3;
+}
+
+.app-message.info {
+  background-color: rgba(116, 83, 252, 0.14);
+  border: 1px solid rgba(116, 83, 252, 0.45);
+  color: #ede8ff;
+}
+
+.results-label {
+  display: inline-block;
+  margin-top: 14px;
+  color: #afafaf;
+  font-size: 14px;
+}
+
+.create-preview-meta {
+  display: block;
+  margin-top: 16px;
+  color: #afafaf;
+  font-size: 14px;
+}
+
 
 
 

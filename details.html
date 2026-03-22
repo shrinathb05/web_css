@@ -4,12 +4,12 @@
   <head>
 
     <meta charset="utf-8">
-    <meta name="author" content="templatemo">
+    <meta name="author" content="Collector Hub">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Liberty Template - NFT Item Detail Page</title>
+    <title>Collector Hub - Item Details</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,13 +21,7 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
 
-TemplateMo 577 Liberty Market
-
-https://templatemo.com/tm-577-liberty-market
-
--->
   </head>
 
 <body>
@@ -79,9 +73,9 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <h6>Liberty NFT Market</h6>
+          <h6>Collector Hub</h6>
           <h2>View Item Details</h2>
-          <span>Home > <a href="#">Item Details</a></span>
+          <span>Home > <a href="details.html">Item Details</a></span>
           <div class="buttons">
             <div class="main-button">
               <a href="explore.html">Explore Our Items</a>
@@ -113,13 +107,13 @@ https://templatemo.com/tm-577-liberty-market
           <h4>Dolores Haze Westworld Eye</h4>
           <span class="author">
             <img src="assets/images/author-02.jpg" alt="" style="max-width: 50px; border-radius: 50%;">
-            <h6>Liberty Artist<br><a href="#">@libertyart</a></h6>
+            <h6>Studio Atlas<br><a href="author.html">@studioatlas</a></h6>
           </span>
-          <p>Lorem ipsum dolor sit amet, consectetu dipiscingei elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p>A cinematic digital portrait with layered lighting, atmospheric texture, and a premium single-edition release format for collectors.</p>
           <div class="row">
             <div class="col-3">
               <span class="bid">
-                Current Bid<br><strong>6.06 ETH</strong><br><em>($8,025.50)</em>
+                Current Bid<br><strong id="current-bid-value">6.06 ETH</strong><br><em id="current-bid-usd">($19,695.00)</em>
               </span>
             </div>
             <div class="col-4">
@@ -129,27 +123,28 @@ https://templatemo.com/tm-577-liberty-market
             </div>
             <div class="col-5">
               <span class="ends">
-                Ends In<br><strong>3D 05H 20M 58S</strong><br><em>(January 22nd, 2021)</em>
+                Ends In<br><strong>3D 05H 20M 58S</strong><br><em>(March 25th, 2026)</em>
               </span>
             </div>
           </div>
-          <form action="submit">
-            <label for="quantity-text">Place Bid:</label>
-            <input placeholder="1 ETH" class="quantity-text">
-            <button type="submit" id="form-submit" class="main-button">Submit Now</button>
+          <form data-bid-form>
+            <label for="bid-amount">Place Bid:</label>
+            <input id="bid-amount" name="bid-amount" placeholder="Ex. 6.40 ETH" class="quantity-text">
+            <button type="submit" id="form-submit" class="main-button">Submit Demo Bid</button>
           </form>
+          <div id="bid-form-message" class="app-message info" hidden></div>
         </div>
         <div class="col-lg-12">
           <div class="current-bid">
-            <div class="row">
+            <div class="row" id="bid-feed">
               <div class="col-lg-6">
                 <div class="mini-heading"><h4>Current Biddings Prices ( ETH )</h4></div>
               </div>
               <div class="col-lg-6">
                 <fieldset>
-                  <select name="Category" class="form-select" aria-label="Default select example" id="chooseCategory" onchange="this.form.click()">
+                  <select name="Category" class="form-select" aria-label="Bid order">
                       <option selected>Sort By: Latest</option>
-                      <option type="checkbox" name="option1" value="old">Sort By: Oldest</option>
+                      <option value="old">Sort By: Oldest</option>
                       <option value="low">Sort By: Lowest</option>
                       <option value="high">Sort By: Highest</option>
                   </select>
@@ -269,7 +264,7 @@ https://templatemo.com/tm-577-liberty-market
               <img src="assets/images/icon-02.png" alt="">
             </div>
             <h4>Set Up Your Wallet</h4>
-            <p>There are 5 different HTML pages included in this NFT <a href="https://templatemo.com/page/1" target="_blank" rel="nofollow">website template</a>. You can edit or modify any section on any page as you required.</p>
+            <p>Create an onboarding path that explains how collectors buy, bid, and track releases across your storefront.</p>
           </div>
         </div>
         <div class="col-lg-4">
@@ -281,7 +276,7 @@ https://templatemo.com/tm-577-liberty-market
               <img src="assets/images/icon-04.png" alt="">
             </div>
             <h4>Add Your Digital NFT</h4>
-            <p>If you would like to support our TemplateMo website, please visit <a rel="nofollow" href="https://templatemo.com/contact" target="_parent">our contact page</a> to make a PayPal contribution. Thank you.</p>
+            <p>Upload the artwork, publish metadata, and keep pricing transparent so the purchase flow feels trustworthy.</p>
           </div>
         </div>
         <div class="col-lg-4">
@@ -301,9 +296,7 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <p>Copyright © 2022 <a href="#">Liberty</a> NFT Marketplace Co., Ltd. All rights reserved.
-          &nbsp;&nbsp;
-          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+          <p>Copyright © 2026 <a href="index.html">Collector Hub</a>. Built as a customizable digital collectibles storefront demo.</p>
         </div>
       </div>
     </div>
@@ -320,5 +313,6 @@ https://templatemo.com/tm-577-liberty-market
   <script src="assets/js/tabs.js"></script>
   <script src="assets/js/popup.js"></script>
   <script src="assets/js/custom.js"></script>
+  <script src="assets/js/app.js"></script>
   </body>
 </html>

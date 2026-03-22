@@ -2,3 +2,7 @@ app.log
 
 *.log
 *.
+node_modules/
+reports/
+playwright-report/
+test-results/

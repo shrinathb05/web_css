@@ -4,12 +4,12 @@
   <head>
 
     <meta charset="utf-8">
-    <meta name="author" content="templatemo">
+    <meta name="author" content="Collector Hub">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Liberty NFT Marketplace - Explore Listing Page</title>
+    <title>Collector Hub - Explore Listings</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,13 +21,7 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
 
-TemplateMo 577 Liberty Market
-
-https://templatemo.com/tm-577-liberty-market
-
--->
   </head>
 
 <body>
@@ -79,9 +73,9 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <h6>Liberty NFT Market</h6>
+          <h6>Collector Hub</h6>
           <h2>Discover Some Top Items</h2>
-          <span>Home > <a href="#">Explore</a></span>
+          <span>Home > <a href="explore.html">Explore</a></span>
         </div>
       </div>
     </div>
@@ -98,7 +92,7 @@ https://templatemo.com/tm-577-liberty-market
                       <h4>Triple Mutant Ape Bored</h4>
                       <span class="author">
                         <img src="assets/images/author.jpg" alt="" style="max-width: 50px; max-height: 50px; border-radius: 50%;">
-                        <h6>Liberty Artist<br><a href="#">@libertyart</a></h6>
+                        <h6>Studio Atlas<br><a href="author.html">@studioatlas</a></h6>
                       </span>
                     </div>
                   </div>
@@ -112,7 +106,7 @@ https://templatemo.com/tm-577-liberty-market
                       <h4>Bored Ape Kennel Club</h4>
                       <span class="author">
                         <img src="assets/images/author.jpg" alt="" style="max-width: 50px; max-height: 50px; border-radius: 50%;">
-                        <h6>Liberty Artist<br><a href="#">@libertyart</a></h6>
+                        <h6>Studio Atlas<br><a href="author.html">@studioatlas</a></h6>
                       </span>
                     </div>
                   </div>
@@ -126,7 +120,7 @@ https://templatemo.com/tm-577-liberty-market
                       <h4>Genesis Club by KMT</h4>
                       <span class="author">
                         <img src="assets/images/author.jpg" alt="" style="max-width: 50px; max-height: 50px; border-radius: 50%;">
-                        <h6>Liberty Artist<br><a href="#">@libertyart</a></h6>
+                        <h6>Studio Atlas<br><a href="author.html">@studioatlas</a></h6>
                       </span>
                     </div>
                   </div>
@@ -140,7 +134,7 @@ https://templatemo.com/tm-577-liberty-market
                       <h4>Crypto Aurora Guy</h4>
                       <span class="author">
                         <img src="assets/images/author.jpg" alt="" style="max-width: 50px; max-height: 50px; border-radius: 50%;">
-                        <h6>Liberty Artist<br><a href="#">@libertyart</a></h6>
+                        <h6>Studio Atlas<br><a href="author.html">@studioatlas</a></h6>
                       </span>
                     </div>
                   </div>
@@ -163,44 +157,45 @@ https://templatemo.com/tm-577-liberty-market
           </div>
         </div>
         <div class="col-lg-7">
-          <form id="search-form" name="gs" method="submit" role="search" action="#">
+          <form id="search-form" name="gs" method="get" role="search" action="#" data-explore-form>
             <div class="row">
               <div class="col-lg-4">
                 <fieldset>
-                    <input type="text" name="keyword" class="searchText" placeholder="Type Something..." autocomplete="on" required>
+                    <input type="text" name="keyword" id="explore-keyword" class="searchText" placeholder="Search title, creator, or style" autocomplete="on">
                 </fieldset>
               </div>
               <div class="col-lg-3">
                 <fieldset>
-                    <select name="Category" class="form-select" aria-label="Default select example" id="chooseCategory" onchange="this.form.click()">
-                        <option selected>All Categories</option>
-                        <option type="checkbox" name="option1" value="Music">Music</option>
-                        <option value="Digital">Digital</option>
-                        <option value="Blockchain">Blockchain</option>
-                        <option value="Virtual">Virtual</option>
+                    <select name="category" class="form-select" aria-label="Filter by category" id="explore-category">
+                        <option value="all" selected>All Categories</option>
+                        <option value="music">Music</option>
+                        <option value="digital">Digital</option>
+                        <option value="blockchain">Blockchain</option>
+                        <option value="virtual">Virtual</option>
                     </select>
                 </fieldset>
               </div>
               <div class="col-lg-3">
                 <fieldset>
-                    <select name="Price" class="form-select" aria-label="Default select example" id="chooseCategory" onchange="this.form.click()">
-                        <option selected>Available</option>
-                        <option value="Ending-Soon">Ending Soon</option>
-                        <option value="Coming-Soon">Coming Soon</option>
-                        <option value="Closed">Closed</option>
+                    <select name="sort" class="form-select" aria-label="Sort listings" id="explore-sort">
+                        <option value="default" selected>Featured Order</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="title">Title: A to Z</option>
                     </select>
                 </fieldset>
               </div>
               <div class="col-lg-2">                        
                 <fieldset>
-                    <button class="main-button">Search</button>
+                    <button class="main-button" type="submit">Search</button>
                 </fieldset>
               </div>
             </div>
+            <span id="explore-results-label" class="results-label">0 listings shown</span>
           </form>
         </div>
         <div class="col-lg-6">
-          <div class="item">
+          <div class="item item-card" data-category="digital">
             <div class="row">
               <div class="col-lg-12">
                 <span class="banner">Double Item</span>
@@ -223,7 +218,7 @@ https://templatemo.com/tm-577-liberty-market
                 <div class="line-dec"></div>
                 <div class="row">
                   <div class="col-lg-3 col-sm-6">
-                    <span>Current Bid: <br> <strong>8.16 ETH</strong></span>
+                    <span>Current Bid: <br> <strong data-item-price>8.16 ETH</strong></span>
                   </div>
                   <div class="col-lg-3 col-sm-6">
                     <span>Category: <br> <strong>Digital Art</strong></span>
@@ -245,7 +240,7 @@ https://templatemo.com/tm-577-liberty-market
           </div>
         </div>
         <div class="col-lg-3">
-          <div class="item">
+          <div class="item item-card" data-category="blockchain">
             <div class="row">
               <div class="col-lg-12">
                 <span class="author">
@@ -258,7 +253,7 @@ https://templatemo.com/tm-577-liberty-market
                 <div class="line-dec"></div>
                 <div class="row">
                   <div class="col-6">
-                    <span>Current Bid: <br> <strong>5.15 ETH</strong></span>
+                    <span>Current Bid: <br> <strong data-item-price>5.15 ETH</strong></span>
                   </div>
                   <div class="col-6">
                     <span>Ends In: <br> <strong>26th Nov</strong></span>
@@ -274,7 +269,7 @@ https://templatemo.com/tm-577-liberty-market
           </div>
         </div>
         <div class="col-lg-3">
-          <div class="item">
+          <div class="item item-card" data-category="digital">
             <div class="row">
               <div class="col-lg-12">
                 <span class="author">
@@ -287,7 +282,7 @@ https://templatemo.com/tm-577-liberty-market
                 <div class="line-dec"></div>
                 <div class="row">
                   <div class="col-6">
-                    <span>Current Bid: <br> <strong>3.63 ETH</strong></span>
+                    <span>Current Bid: <br> <strong data-item-price>3.63 ETH</strong></span>
                   </div>
                   <div class="col-6">
                     <span>Ends In: <br> <strong>24th Nov</strong></span>
@@ -303,7 +298,7 @@ https://templatemo.com/tm-577-liberty-market
           </div>
         </div>
         <div class="col-lg-3">
-          <div class="item">
+          <div class="item item-card" data-category="virtual">
             <div class="row">
               <div class="col-lg-12">
                 <span class="author">
@@ -316,7 +311,7 @@ https://templatemo.com/tm-577-liberty-market
                 <div class="line-dec"></div>
                 <div class="row">
                   <div class="col-6">
-                    <span>Current Bid: <br> <strong>4.68 ETH</strong></span>
+                    <span>Current Bid: <br> <strong data-item-price>4.68 ETH</strong></span>
                   </div>
                   <div class="col-6">
                     <span>Ends In: <br> <strong>28th Nov</strong></span>
@@ -539,9 +534,7 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <p>Copyright © 2022 <a href="#">Liberty</a> NFT Marketplace Co., Ltd. All rights reserved.
-          &nbsp;&nbsp;
-          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+          <p>Copyright © 2026 <a href="index.html">Collector Hub</a>. Built as a customizable digital collectibles storefront demo.</p>
         </div>
       </div>
     </div>
@@ -558,6 +551,7 @@ https://templatemo.com/tm-577-liberty-market
   <script src="assets/js/tabs.js"></script>
   <script src="assets/js/popup.js"></script>
   <script src="assets/js/custom.js"></script>
+  <script src="assets/js/app.js"></script>
 
   </body>
 </html>

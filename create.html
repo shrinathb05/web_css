@@ -4,12 +4,12 @@
   <head>
 
     <meta charset="utf-8">
-    <meta name="author" content="templatemo">
+    <meta name="author" content="Collector Hub">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Liberty Template - Create NFT Page</title>
+    <title>Collector Hub - Create Listing</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,13 +21,7 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
 
-TemplateMo 577 Liberty Market
-
-https://templatemo.com/tm-577-liberty-market
-
--->
   </head>
 
 <body>
@@ -79,9 +73,9 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <h6>Liberty NFT Market</h6>
-          <h2>Create Your NFT Now.</h2>
-          <span>Home > <a href="#">Create Yours</a></span>
+          <h6>Collector Hub Studio</h6>
+          <h2>Create Your Next Listing.</h2>
+          <span>Home > <a href="create.html">Create Yours</a></span>
           <div class="buttons">
             <div class="main-button">
               <a href="explore.html">Explore Our Items</a>
@@ -101,54 +95,55 @@ https://templatemo.com/tm-577-liberty-market
         <div class="col-lg-12">
           <div class="section-heading">
             <div class="line-dec"></div>
-            <h2>Apply For <em>Your Item</em> Here.</h2>
+            <h2>Build <em>Your Item</em> Here.</h2>
           </div>
         </div>
         <div class="col-lg-12">
-          <form id="contact" action="" method="post">
+          <form id="contact" data-create-form>
             <div class="row">
               <div class="col-lg-4">
                 <fieldset>
                   <label for="title">Item Title</label>
-                  <input type="title" name="title" id="title" placeholder="Ex. Lyon King" autocomplete="on" required>
+                  <input type="text" name="title" id="title" placeholder="Ex. Neon Horizon" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-4">
                 <fieldset>
                   <label for="description">Description For Item</label>
-                  <input type="description" name="description" id="description" placeholder="Give us your idea" autocomplete="on" required>
+                  <input type="text" name="description" id="description" placeholder="Tell collectors what makes it unique" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-4">
                 <fieldset>
                   <label for="username">Your Username</label>
-                  <input type="username" name="username" id="username" placeholder="Ex. @alansmithee" autocomplete="on" required>
+                  <input type="text" name="username" id="username" placeholder="Ex. @studioatlas" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-6">
                 <fieldset>
                   <label for="price">Price Of Item</label>
-                  <input type="price" name="price" id="price" placeholder="Price depends on quality. Ex. 0.06 ETH" autocomplete="on" required>
+                  <input type="text" name="price" id="price" placeholder="Ex. 0.85 ETH" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-6">
                 <fieldset>
-                  <label for="royalities">Royalties</label>
-                  <input type="royalities" name="royalities" id="royalities" placeholder="Common royalties 1-25%" autocomplete="on" required>
+                  <label for="royalties">Royalties</label>
+                  <input type="text" name="royalties" id="royalties" placeholder="Ex. 8% creator royalty" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-4">
                 <fieldset>
                   <label for="file">Your File</label>
-                  <input type="file" id="file" name="myfiles[]" multiple />
+                  <input type="file" id="file" name="myfiles[]" accept="image/*" />
                 </fieldset>
               </div>
               <div class="col-lg-8">
                 <fieldset>
-                  <button type="submit" id="form-submit" class="orange-button">Submit Your Applying</button>
+                  <button type="submit" id="form-submit" class="orange-button">Save Listing Draft</button>
                 </fieldset>
               </div>
             </div>
+            <div id="create-form-message" class="app-message info" hidden></div>
           </form>
         </div>
         <div class="col-lg-12">
@@ -159,30 +154,30 @@ https://templatemo.com/tm-577-liberty-market
         </div>
         <div class="col-lg-7">
           <div class="left-image">
-            <img src="assets/images/create-yours.jpg" alt="" style="border-radius: 20px;">
+            <img src="assets/images/create-yours.jpg" id="preview-image" alt="Item preview artwork" style="border-radius: 20px;">
           </div>
         </div>
         <div class="col-lg-5 align-self-center">
-          <h4>Dolores Haze Westworld Eye</h4>
+          <h4 id="preview-title">Untitled Collection Piece</h4>
           <span class="author">
             <img src="assets/images/author-02.jpg" alt="" style="max-width: 50px; border-radius: 50%;">
-            <h6>Kataleya Smithee<br><a href="#">@kataleey</a></h6>
+            <h6><span id="preview-owner-name">Creator</span><br><a href="create.html" id="preview-username">@yourhandle</a></h6>
           </span>
-          <p>Lorem ipsum dolor sit amet, consectetu dipiscingei elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p id="preview-description">Add a short description to tell collectors what makes this piece special.</p>
           <div class="row">
             <div class="col-3">
               <span class="bid">
-                Current Bid<br><strong>0.06 ETH</strong><br><em>($8055,35)</em>
+                Starting Price<br><strong id="preview-price-eth">0.00 ETH</strong><br><em id="preview-price-usd">($0.00)</em>
               </span>
             </div>
             <div class="col-4">
               <span class="owner">
-                Owner<br><strong>Alan Smithee</strong><br><em>(@asmithee)</em>
+                Creator<br><strong id="preview-owner-label">Draft Mode</strong><br><em id="preview-owner-handle">@yourhandle</em>
               </span>
             </div>
             <div class="col-5">
               <span class="ends">
-                Ends In<br><strong>3D 05H 20M 58S</strong><br><em>(January 22nd, 2021)</em>
+                Royalties<br><strong id="preview-royalties">10% creator royalty</strong><br><em class="create-preview-meta">Saved locally in your browser</em>
               </span>
             </div>
           </div>
@@ -195,9 +190,7 @@ https://templatemo.com/tm-577-liberty-market
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <p>Copyright © 2022 <a href="#">Liberty</a> NFT Marketplace Co., Ltd. All rights reserved.
-          &nbsp;&nbsp;
-          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+          <p>Copyright © 2026 <a href="index.html">Collector Hub</a>. Built as a customizable digital collectibles storefront demo.</p>
         </div>
       </div>
     </div>
@@ -214,5 +207,6 @@ https://templatemo.com/tm-577-liberty-market
   <script src="assets/js/tabs.js"></script>
   <script src="assets/js/popup.js"></script>
   <script src="assets/js/custom.js"></script>
+  <script src="assets/js/app.js"></script>
   </body>
 </html>
