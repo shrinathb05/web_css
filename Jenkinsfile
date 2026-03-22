@@ -1,6 +1,6 @@
 pipeline {
     
-    agent {label 'agent1'}
+    agent {label 'nginx-agent'}
 
     // parameters {
     //     string(name: 'TAG_NAME', defaultValue: 'v0.1', description: 'Provide tag to deploy the project')
