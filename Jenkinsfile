@@ -45,6 +45,14 @@ pipeline {
                     sh "npm ci"
             }
         }
+
+        stage("Install Playwright Browser") {
+            steps {
+                echo "Install Playwright Chromium Browser....."
+                // Install only the chromium binary to save time/space
+                sh 'npx playwright install chromium'
+            }
+        }
     }
 
 }
