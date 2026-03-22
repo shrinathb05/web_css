@@ -67,10 +67,12 @@ pipeline {
                 dir("${WORK_DIR}") {
                     echo "Running the unit tests......"
                     script {
+                        echo "Installing additional packages"
+                        sh "npm install --save-dev jest-junit"
                         try {
                             // Removed the extra --coverage since it is in your package.json
                             // Added --passWithNoTests to prevent failure if no tests exist yet
-                            sh "CI=true npm run test:unit -- --reporter=default --reporter=jest-junit --passWithNoTests"
+                            sh "CI=true npm run test:unit -- --reporter=default --reporter=junit --outputFile=junit.xml --passWithNoTests"
                         } catch (Exception e) {
                             currentBuild.result = 'FAILURE'
                             echo "Unit tests failed, but continuing to post-actions for reporting."
