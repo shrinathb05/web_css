@@ -10,10 +10,7 @@ pipeline {
         
         GIT_REPO = "https://github.com/shrinathb05/web_css.git"
         GIT_BRANCH = "dev"
-
         SONAR_SERVER_NAME = "sonar-server"
-        OWASP_TOOL_NAME = "owasp-dpcheck"
-
         WORK_DIR = "/home/ubuntu/var/work/webapp"
         
     }
@@ -102,6 +99,32 @@ pipeline {
                             currentBuild.result = 'FAILURE'
                             error "Security vulnerabilities detected! Please check the audit reports."
                         }
+                    }
+                }
+            }
+        }
+
+        stage('Sonarqube Analysis') {
+            steps {
+                dir("${WORK_DIR}") {
+                    script {
+                        //Prepare SonarQube Reports
+                        echo "Formatting test execution reports for SonarScanner..."
+                        // This runs your custom script to bridge Vitest -> SonarQube
+                        sh "npm run sonar:prepare"
+
+                        //SonarQube Scan
+                        withSonarQubeEnv("${env.SONAR_SERVER_NAME}") {
+                        echo "Starting SonarScanner analysis..."
+                        sh """
+                            npx sonar-scanner \
+                            -Dsonar.projectKey=collector-hub-static-site \
+                            -Dsonar.sources=. \
+                            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                            -Dsonar.testExecutionReportPaths=reports/test-reporter.xml \
+                            -Dsonar.exclusions=node_modules/**,playwright-report/**,dist/**
+                        """
+                    }
                     }
                 }
             }
