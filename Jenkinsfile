@@ -11,6 +11,7 @@ pipeline {
         GIT_REPO = "https://github.com/shrinathb05/web_css.git"
         GIT_BRANCH = "dev"
         SONAR_SERVER_NAME = "sonar-server"
+        OWASP_CHECK_NAME = 'dp-check'
         WORK_DIR = "/home/ubuntu/var/work/webapp"
         
     }
@@ -99,6 +100,22 @@ pipeline {
                             currentBuild.result = 'FAILURE'
                             error "Security vulnerabilities detected! Please check the audit reports."
                         }
+
+                        // 3. NEW: OWASP Dependency-Check
+                        // This uses the Jenkins Plugin 'dependency-check-jenkins'
+
+                        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_KEY')]) {
+                            script {
+                                dependencyCheck additionalArguments: """
+                                    --scan './', 
+                                    --format 'ALL',
+                                    --out 'reports/owasp'", 
+                                    --nvdApiKey ${NVD_KEY}
+                                    --nodeAuditSkip
+                                """,
+                                odcInstallation: "${OWASP_CHECK_NAME}" // Name from Jenkins Global Tool Config
+                            }
+                        }
                     }
                 }
             }
@@ -184,8 +201,16 @@ pipeline {
                 }
             }
         }
+        success {
+            echo "Pipeline Completed Successfully! Sending notification..."
+            // Optional: mail to: 'admin@example.com', subject: "Build Success", body: "Build ${env.BUILD_NUMBER} is live."
+        }
+        failure {
+            echo "Pipeline Failed. Cleaning up temporary artifacts..."
+        }
         cleanup {
             echo "Cleaning up workspace..."
+            // cleanWs()
             // Optional: deleteDir() 
             // In production, some prefer to keep the WORK_DIR for debugging, 
             // but deleteDir() keeps the agent storage healthy.
