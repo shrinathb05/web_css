@@ -81,15 +81,47 @@ pipeline {
                 }
             }
         }
+
+        stage('Integration Tests') {
+            steps {
+                dir("${WORK_DIR}") {
+                    echo "Running Playwright Integration Tests..."
+                    script {
+                        try {
+                            // 1. CI=true ensures Playwright runs in headless mode
+                            // 2. --reporter=junit,list gives us both console output and an XML file
+                            sh "CI=true npx playwright test --reporter=junit,list"
+                        } catch (Exception e) {
+                            currentBuild.result = 'FAILURE'
+                            echo "Integration tests failed. Check the Playwright report for details."
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
             dir("${env.WORK_DIR}") {
-                // Archive the JUnit XML we just generated
-                junit allowEmptyResults: true, testResults: 'junit.xml'
+                
+                // Combine Unit and Integration XML results
+                // This looks for any .xml file in the workspace
+                junit allowEmptyResults: true, testResults: '**/junit.xml, **/results.xml'
 
                 script {
+                    // Archive Playwright HTML Report if it exists
+                    if (fileExists("playwright-report/index.html")) {
+                        publishHTML([
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'playwright-report',
+                            reportFiles: 'index.html',
+                            reportName: 'Playwright Integration Report'
+                        ])
+                    }
+
                     // Only publish if Vitest successfully created the coverage folder
                     if (fileExists("coverage/lcov-report/index.html")) {
                         publishHTML([
