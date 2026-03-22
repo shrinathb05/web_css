@@ -40,17 +40,21 @@ pipeline {
 
         stage("Install Dependencies") {
             steps {
+                dir("${WORK_DIR}") {
                     echo " Installing project dependencies..."
                     // Using npm ci for a clean, deterministic install
                     sh "npm ci"
+                }
             }
         }
 
         stage("Install Playwright Browser") {
             steps {
-                echo "Install Playwright Chromium Browser....."
-                // Install only the chromium binary to save time/space
-                sh 'npx playwright install chromium'
+                dir("${WORK_DIR}") {
+                    echo "Install Playwright Chromium Browser....."
+                    // Install only the chromium binary to save time/space
+                    sh 'npx playwright install chromium'
+                }
             }
         }
     }
