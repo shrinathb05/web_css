@@ -2,6 +2,10 @@ pipeline {
     
     agent {label 'nginx-agent'}
 
+    tools {
+        nodejs 'node25'
+    }
+
     // parameters {
     //     string(name: 'TAG_NAME', defaultValue: 'v0.1', description: 'Provide tag to deploy the project')
     // }
