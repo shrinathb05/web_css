@@ -11,8 +11,8 @@ pipeline {
         GIT_REPO = "https://github.com/shrinathb05/web_css.git"
         GIT_BRANCH = "dev"
         SONAR_SERVER_NAME = "sonar-server"
-        OWASP_CHECK_NAME = 'dp-check'
-        WORK_DIR = "/home/ubuntu/var/work/webapp"
+        OWASP_CHECK_NAME = 'owasp-dp-Check'
+        WORK_DIR = "/home/ubuntu/var/work/libertyapp"
         
     }
 
