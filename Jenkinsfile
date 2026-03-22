@@ -37,6 +37,14 @@ pipeline {
                 }
             }
         }
+
+        stage("Install Dependencies") {
+            steps {
+                    echo " Installing project dependencies..."
+                    // Using npm ci for a clean, deterministic install
+                    sh "npm ci"
+            }
+        }
     }
 
 }
